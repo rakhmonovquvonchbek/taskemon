@@ -26,7 +26,10 @@ const Index = () => {
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-600 to-blue-600">
-        <div className="text-white text-2xl">Loading Taskémon...</div>
+        <div className="text-center">
+          <div className="text-6xl mb-4 animate-spin">⚔️</div>
+          <div className="text-white text-2xl animate-pulse">Loading Taskémon...</div>
+        </div>
       </div>
     );
   }
@@ -36,13 +39,13 @@ const Index = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-      <header className="bg-white shadow-sm border-b">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100">
+      <header className="bg-white/80 backdrop-blur-sm shadow-sm border-b sticky top-0 z-50">
         <div className="max-w-6xl mx-auto px-6 py-4">
           <div className="flex items-center gap-3">
-            <div className="text-3xl">⚔️</div>
+            <div className="text-4xl animate-bounce">⚔️</div>
             <div>
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
                 Taskémon
               </h1>
               <p className="text-sm text-gray-600">Life RPG System</p>
