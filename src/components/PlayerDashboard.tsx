@@ -1,14 +1,14 @@
-
 import React, { useState, useEffect } from 'react';
-import { Player, Quest, Achievement } from '../types/GameTypes';
+import { Player, Quest, Achievement, TaskCreationData } from '../types/GameTypes';
 import { GameEngine } from '../classes/GameEngine';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
+import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import StatsCard from './StatsCard';
 import TaskCard from './TaskCard';
+import SmartTaskCreator from './SmartTaskCreator';
 import CircularProgress from './CircularProgress';
-import { Star, Trophy, Target, TrendingUp, Award } from 'lucide-react';
+import { Star, Trophy, Target, TrendingUp, Award, Plus } from 'lucide-react';
 
 interface PlayerDashboardProps {
   playerId: string;
@@ -18,6 +18,7 @@ const PlayerDashboard: React.FC<PlayerDashboardProps> = ({ playerId }) => {
   const [player, setPlayer] = useState<Player | null>(null);
   const [availableQuests, setAvailableQuests] = useState<Quest[]>([]);
   const [achievements, setAchievements] = useState<Achievement[]>([]);
+  const [showTaskCreator, setShowTaskCreator] = useState(false);
   const gameEngine = GameEngine.getInstance();
 
   useEffect(() => {
@@ -36,6 +37,18 @@ const PlayerDashboard: React.FC<PlayerDashboardProps> = ({ playerId }) => {
       setPlayer(updatedPlayer);
       setAvailableQuests(gameEngine.getAvailableQuests(playerId));
       setAchievements(gameEngine.getUnlockedAchievements(playerId));
+    }
+  };
+
+  const handleCreateTask = (taskData: TaskCreationData) => {
+    const newQuest = gameEngine.createTaskFromData(playerId, taskData);
+    setShowTaskCreator(false);
+    
+    // Refresh data
+    const updatedPlayer = gameEngine.getPlayer(playerId);
+    if (updatedPlayer) {
+      setPlayer(updatedPlayer);
+      setAvailableQuests(gameEngine.getAvailableQuests(playerId));
     }
   };
 
@@ -128,12 +141,22 @@ const PlayerDashboard: React.FC<PlayerDashboardProps> = ({ playerId }) => {
         {/* Available Tasks */}
         <Card className="clean-card border-0 shadow-sm">
           <CardHeader className="pb-4">
-            <CardTitle className="flex items-center gap-3 text-heading">
-              <Target className="w-5 h-5 text-primary" />
-              Today's Focus
-              <Badge className="bg-primary/10 text-primary border-primary/20">
-                {availableQuests.length}
-              </Badge>
+            <CardTitle className="flex items-center justify-between text-heading">
+              <div className="flex items-center gap-3">
+                <Target className="w-5 h-5 text-primary" />
+                Today's Focus
+                <Badge className="bg-primary/10 text-primary border-primary/20">
+                  {availableQuests.length}
+                </Badge>
+              </div>
+              <Button 
+                onClick={() => setShowTaskCreator(true)}
+                size="sm"
+                className="bg-primary hover:bg-primary/90"
+              >
+                <Plus className="w-4 h-4 mr-1" />
+                Add Task
+              </Button>
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
@@ -147,7 +170,14 @@ const PlayerDashboard: React.FC<PlayerDashboardProps> = ({ playerId }) => {
             {availableQuests.length === 0 && (
               <div className="text-center py-8">
                 <div className="text-3xl mb-2">✨</div>
-                <p className="text-body">All tasks completed! Great work.</p>
+                <p className="text-body mb-4">No tasks yet! Create your first task.</p>
+                <Button 
+                  onClick={() => setShowTaskCreator(true)}
+                  className="bg-primary hover:bg-primary/90"
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  Create Task
+                </Button>
               </div>
             )}
           </CardContent>
@@ -216,6 +246,14 @@ const PlayerDashboard: React.FC<PlayerDashboardProps> = ({ playerId }) => {
           </div>
         </CardContent>
       </Card>
+
+      {/* Smart Task Creator Modal */}
+      {showTaskCreator && (
+        <SmartTaskCreator
+          onCreateTask={handleCreateTask}
+          onCancel={() => setShowTaskCreator(false)}
+        />
+      )}
     </div>
   );
 };

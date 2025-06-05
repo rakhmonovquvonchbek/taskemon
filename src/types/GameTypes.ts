@@ -1,4 +1,3 @@
-
 export interface Player {
   id: string;
   name: string;
@@ -41,6 +40,8 @@ export interface Quest {
   isCompleted: boolean;
   completedAt?: Date;
   streak?: number;
+  urgency?: TaskUrgency;
+  bonuses?: TaskBonus[];
 }
 
 export interface Achievement {
@@ -118,3 +119,27 @@ export interface GuildChallenge {
   endDate: Date;
   rewards: AchievementReward;
 }
+
+export interface TaskCreationData {
+  title: string;
+  description: string;
+  difficulty: TaskDifficulty;
+  importance: TaskImportance;
+  avoidance: TaskAvoidance;
+  category: QuestCategory;
+  urgency: TaskUrgency;
+  baseXP: number;
+  finalXP: number;
+  bonuses: TaskBonus[];
+}
+
+export interface TaskBonus {
+  type: string;
+  multiplier: number;
+  description: string;
+}
+
+export type TaskDifficulty = 'easy' | 'medium' | 'hard' | 'epic';
+export type TaskImportance = 'life-changing' | 'really-should' | 'would-be-nice' | 'not-needed';
+export type TaskAvoidance = 'really-avoid' | 'kinda-dreading' | 'neutral' | 'want-to-do';
+export type TaskUrgency = 'today' | 'this-week' | 'this-month' | 'no-deadline';

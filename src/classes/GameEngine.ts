@@ -1,4 +1,3 @@
-
 import { Player, Quest, Achievement, PlayerStats, InventoryItem } from '../types/GameTypes';
 
 export class GameEngine {
@@ -79,6 +78,61 @@ export class GameEngine {
     this.checkAchievements(playerId);
 
     console.log(`Quest completed: ${quest.title} (+${totalXP} XP)${leveledUp ? ' LEVEL UP!' : ''}`);
+  }
+
+  public createTaskFromData(playerId: string, taskData: TaskCreationData): Quest {
+    const player = this.players.get(playerId);
+    if (!player) throw new Error('Player not found');
+
+    const quest: Quest = {
+      id: Math.random().toString(36).substr(2, 9),
+      title: taskData.title,
+      description: taskData.description,
+      category: taskData.category,
+      difficulty: taskData.difficulty,
+      type: 'daily',
+      xpReward: taskData.finalXP,
+      statRewards: this.calculateStatRewards(taskData.category, taskData.finalXP),
+      timeEstimate: this.estimateTime(taskData.difficulty),
+      prerequisites: [],
+      isCompleted: false,
+      urgency: taskData.urgency,
+      bonuses: taskData.bonuses
+    };
+
+    this.quests.set(quest.id, quest);
+    player.currentQuests.push(quest.id);
+    
+    return quest;
+  }
+
+  private calculateStatRewards(category: string, xpReward: number): Partial<PlayerStats> {
+    const baseStatReward = Math.max(1, Math.floor(xpReward / 20));
+    
+    switch (category) {
+      case 'health':
+        return { strength: baseStatReward };
+      case 'learning':
+        return { intelligence: baseStatReward };
+      case 'creative':
+        return { creativity: baseStatReward };
+      case 'social':
+        return { social: baseStatReward };
+      case 'personal':
+        return { wisdom: baseStatReward };
+      default:
+        return { wisdom: baseStatReward };
+    }
+  }
+
+  private estimateTime(difficulty: string): number {
+    switch (difficulty) {
+      case 'easy': return 10;
+      case 'medium': return 45;
+      case 'hard': return 120;
+      case 'epic': return 300;
+      default: return 45;
+    }
   }
 
   private getClassMultiplier(characterClass: string, category: string): number {
